@@ -15,14 +15,10 @@ import pt.isec.a21210827.fourinrow.R;
 
 import static android.widget.ImageView.ScaleType.FIT_XY;
 
-/**
- * Created by joaop on 11/7/2016.
- */
-
 public class GameGridViewAdapter extends BaseAdapter {
 
-    int[] list;
-    Context context;
+    private int[] list;
+    private Context context;
 
     public GameGridViewAdapter(int[] list, Context context) {
         this.list = list;
@@ -58,6 +54,7 @@ public class GameGridViewAdapter extends BaseAdapter {
 //        int height = metrics.heightPixels;
 
 
+        //Teste Commit
         iv.setAdjustViewBounds(true);
 //        iv.setMaxHeight(height);
 //        iv.setMinimumHeight(height);
