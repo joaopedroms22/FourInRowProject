@@ -61,6 +61,7 @@ public class GameSettingsActivity extends Activity {
     Communication com;
     ServerSocket serverSocket = null;
 
+    Intent intent;
     int mode;
     Game gameInstance = new Game();
     String permissions[] = {ACCESS_NETWORK_STATE};
@@ -136,8 +137,10 @@ public class GameSettingsActivity extends Activity {
                         return;
                     }
 
-                    setGameData(etPlayerName.getText().toString());
-                    setGameData("BOT Roberto");
+                    setPlayerData(etPlayerName.getText().toString());
+                    setPlayerData("BOT Roberto");
+
+                    setGameData();
 
                     gameInstance.setGameMode(S_SINGLE_PLAYER);
 
@@ -165,8 +168,12 @@ public class GameSettingsActivity extends Activity {
                         return;
                     }
 
-                    setGameData(etPlayerName.getText().toString());
-                    setGameData(etPlayerName2.getText().toString());
+                    //Coloca a informação dos jogadores na gameInstance
+                    setPlayerData(etPlayerName.getText().toString());
+                    setPlayerData(etPlayerName2.getText().toString());
+
+                    //Coloca a informação referente ao jogo na gameInstance
+                    setGameData();
 
                     gameInstance.setGameMode(S_MULTIPLAYER_LOCAL);
 
@@ -196,20 +203,41 @@ public class GameSettingsActivity extends Activity {
                     }
 
                     com = (Communication) getApplication();
-                    setGameData(etPlayerName.getText().toString());
+
+                    //Coloca a informação referente ao tabuleiro na gameInstance
+                    setGameData();
+
+                    //Coloca o tipo de jogo em Multiplayer_Online
+                    gameInstance.setGameMode(S_MULTIPLAYER_ONLINE);
+
+                    //Copia a instancia criada anteriormente para dentro da class comunicação, para a mesma instacia do jogo ser partilhada pelos 2 players
                     com.setGameInstance(gameInstance);
 
                     switch (getValueRadioGroup(rgMode)) {
                         case 0:
                             //client();
-                            clientDlg();
                             com.getGameInstance().getPlayers().add(new Player(etPlayerName.getText().toString()));
+                            clientDlg();
+
+                            intent = new Intent(getApplicationContext(), GameActivity.class);
+                            intent.putExtra("Game", com.getGameInstance());
+                            startActivity(intent);
+                            finish();
+
                             break;
+
                         case 1:
-                            //No caso de ser Server fica a espera que algum cliente de ligue a ele, e só depois entra no jogo!
                             //server();
+                            com.getGameInstance().getPlayers().add(new Player(etPlayerName.getText().toString()));
                             serverDlg();
+
+                            intent = new Intent(getApplicationContext(), GameActivity.class);
+                            intent.putExtra("Game", com.getGameInstance());
+                            startActivity(intent);
+                            finish();
+
                             break;
+
                     }
                 }
             });
@@ -261,21 +289,8 @@ public class GameSettingsActivity extends Activity {
         return idx;
     }
 
-    private void setGameData(String playerName) {
-
+    private void setPlayerData(String playerName){
         Player player = new Player(playerName);
-
-        switch (getValueRadioGroup(rgGridSize)) {
-            case 0:
-                gameInstance.setSize(7);
-                break;
-            case 1:
-                gameInstance.setSize(8);
-                break;
-            case 2:
-                gameInstance.setSize(9);
-                break;
-        }
 
         switch (getValueRadioGroup(rgColorPiece)) { //TODO: ARRANJAR FORMA DE CONTORNAR ESTE PROBLEMA DA COR DAS PEÇAS QUE ESCOLEHEM QUANDO ESTÃO 2 JOGADORES!
             case 0:
@@ -289,10 +304,26 @@ public class GameSettingsActivity extends Activity {
         gameInstance.getPlayers().add(player);
     }
 
+    private void setGameData() {
+
+        switch (getValueRadioGroup(rgGridSize)) {
+            case 0:
+                gameInstance.setSize(7);
+                break;
+            case 1:
+                gameInstance.setSize(8);
+                break;
+            case 2:
+                gameInstance.setSize(9);
+                break;
+        }
+
+    }
+
     public void clientDlg() {
 
         final EditText edtIP = new EditText(this);
-        edtIP.setText("10.0.2.2");
+        edtIP.setText("192.168.1.117");
         AlertDialog ad = new AlertDialog.Builder(this).setTitle("Four In Row Client")
                 .setMessage("Server IP").setView(edtIP)
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
@@ -329,8 +360,5 @@ public class GameSettingsActivity extends Activity {
         pd.show();
 
         com.server(pd);
-
-        pd.dismiss();
-
     }
 }

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -39,6 +40,13 @@ public class Communication extends Application {
     BufferedReader input;
     PrintWriter output;
     Handler procMsg = null;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        procMsg = new Handler();
+    }
 
     public void client(final String strIP, final int Port) {
         Thread t = new Thread(new Runnable() {
@@ -111,6 +119,7 @@ public class Communication extends Application {
                         @Override
                         public void run() {
                             //moveOtherPlayer(move);
+                            Toast.makeText(getApplicationContext(),"Lancei o handler",Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
