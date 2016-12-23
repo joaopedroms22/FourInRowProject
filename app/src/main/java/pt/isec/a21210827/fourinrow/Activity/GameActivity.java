@@ -32,6 +32,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 
+import pt.isec.a21210827.fourinrow.Class.Communication;
 import pt.isec.a21210827.fourinrow.Class.Game;
 import pt.isec.a21210827.fourinrow.Class.GameGridViewAdapter;
 import pt.isec.a21210827.fourinrow.Class.Player;
@@ -57,8 +58,10 @@ public class GameActivity extends Activity {
         //Recebe os intents passados das outras activity
         receiveIntents();
 
+        Communication com = (Communication) getApplication();
+
         //Desenha o Tabuleiro
-        GameEngine.getInstance().startGame(this, gvGame, gameInstance, gameChronometer, tvPlayerName, tvScore);
+        GameEngine.getInstance().startGame(this, gvGame, gameInstance, gameChronometer, tvPlayerName, tvScore, com);
 
     }
 

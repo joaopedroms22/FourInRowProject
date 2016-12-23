@@ -35,6 +35,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 
+import pt.isec.a21210827.fourinrow.Class.Communication;
 import pt.isec.a21210827.fourinrow.Class.Game;
 import pt.isec.a21210827.fourinrow.Class.Player;
 import pt.isec.a21210827.fourinrow.R;
@@ -51,21 +52,14 @@ public class GameSettingsActivity extends Activity {
     final public static String S_MULTIPLAYER_LOCAL = "Modo - Dois Jogadores (LOCAL)";
     final public static String S_MULTIPLAYER_ONLINE = "Modo - Dois Jogadores (ONLINE)";
 
-    private static final int PORT = 8899;
-
-    ProgressDialog pd = null;
-
-    ServerSocket serverSocket = null;
-    Socket socketGame = null;
-    BufferedReader input;
-    PrintWriter output;
-    Handler procMsg = null;
-
     TextView tvHeader, tvPlayerName2, tvGridSize, tvColorPiece, tvMode;
     EditText etPlayerName, etPlayerName2;
     Button btStartGame;
     RadioGroup rgGridSize, rgColorPiece, rgMode;
-    Intent intent;
+
+    private static final int PORT = 8899;
+    Communication com;
+    ServerSocket serverSocket = null;
 
     int mode;
     Game gameInstance = new Game();
@@ -192,6 +186,7 @@ public class GameSettingsActivity extends Activity {
 
             etPlayerName2.setVisibility(View.GONE);
             tvPlayerName2.setVisibility(View.GONE);
+
             btStartGame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -200,16 +195,20 @@ public class GameSettingsActivity extends Activity {
                         return;
                     }
 
+                    com = (Communication) getApplication();
                     setGameData(etPlayerName.getText().toString());
+                    com.setGameInstance(gameInstance);
 
                     switch (getValueRadioGroup(rgMode)) {
                         case 0:
                             //client();
                             clientDlg();
+                            com.getGameInstance().getPlayers().add(new Player(etPlayerName.getText().toString()));
                             break;
                         case 1:
                             //No caso de ser Server fica a espera que algum cliente de ligue a ele, e só depois entra no jogo!
-                            server();
+                            //server();
+                            serverDlg();
                             break;
                     }
                 }
@@ -290,11 +289,31 @@ public class GameSettingsActivity extends Activity {
         gameInstance.getPlayers().add(player);
     }
 
-    void server() {
-        // WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
-        // String ip = Formatter.formatIpAddress(wm.getConnectionInfo()
-        // .getIpAddress());
-        String ip = getLocalIpAddress();
+    public void clientDlg() {
+
+        final EditText edtIP = new EditText(this);
+        edtIP.setText("10.0.2.2");
+        AlertDialog ad = new AlertDialog.Builder(this).setTitle("Four In Row Client")
+                .setMessage("Server IP").setView(edtIP)
+                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        com.client(edtIP.getText().toString(), PORT); // to test with emulators: PORTaux);
+                    }
+                }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        //finish();
+                    }
+                }).create();
+        ad.show();
+    }
+
+    public void serverDlg() {
+
+        ProgressDialog pd;
+
+        String ip = com.getLocalIpAddress();
         pd = new ProgressDialog(this);
         pd.setMessage("Waiting for a client..." + "\n(IP: " + ip + ")"); //TODO: Colocar no ficheiro de strings
         pd.setTitle("Four in Row Server!");
@@ -304,108 +323,14 @@ public class GameSettingsActivity extends Activity {
             @Override
             public void onCancel(DialogInterface dialog) {
                 finish();
-                if (serverSocket != null) {
-                    try {
-                        serverSocket.close();
-                    } catch (IOException e) {
-                    }
-                    serverSocket = null;
-                }
             }
         });
+
         pd.show();
 
-    }
+        com.server(pd);
 
-    void clientDlg() {
-        final EditText edtIP = new EditText(this);
-        edtIP.setText("10.0.2.2");
-        AlertDialog ad = new AlertDialog.Builder(this).setTitle("Four In Row Client")
-                .setMessage("Server IP").setView(edtIP)
-                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        client(edtIP.getText().toString(), PORT); // to test with emulators: PORTaux);
-                    }
-                }).setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        finish();
-                    }
-                }).create();
-        ad.show();
-    }
+        pd.dismiss();
 
-    void client(final String strIP, final int Port) {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Log.d("RPS", "Connecting to the server  " + strIP);
-                    socketGame = new Socket(strIP, Port);
-                } catch (Exception e) {
-                    socketGame = null;
-                }
-                if (socketGame == null) {
-                    procMsg.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            finish();
-                        }
-                    });
-                    return;
-                }
-                commThread.start();
-            }
-        });
-        t.start();
-    }
-
-    Thread commThread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            try {
-                input = new BufferedReader(new InputStreamReader(socketGame.getInputStream()));
-                output = new PrintWriter(socketGame.getOutputStream());
-                while (!Thread.currentThread().isInterrupted()) {
-                    String read = input.readLine();
-                    //final int move = Integer.parseInt(read);
-                    //Log.d("RPS", "Received: " + move);
-                    procMsg.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            //moveOtherPlayer(move);
-                        }
-                    });
-                }
-            } catch (Exception e) {
-                procMsg.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                        Toast.makeText(getApplicationContext(), "Fim do Jogo", Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        }
-    });
-
-    public static String getLocalIpAddress() {
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface
-                    .getNetworkInterfaces(); en.hasMoreElements(); ) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()
-                            && inetAddress instanceof Inet4Address) {
-                        return inetAddress.getHostAddress();
-                    }
-                }
-            }
-        } catch (SocketException ex) {
-            ex.printStackTrace();
-        }
-        return null;
     }
 }

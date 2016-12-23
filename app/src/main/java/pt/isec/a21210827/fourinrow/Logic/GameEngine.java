@@ -16,6 +16,7 @@ import android.widget.Toast;
 import java.util.Random;
 
 import pt.isec.a21210827.fourinrow.Activity.MainActivity;
+import pt.isec.a21210827.fourinrow.Class.Communication;
 import pt.isec.a21210827.fourinrow.Class.Game;
 import pt.isec.a21210827.fourinrow.Class.GameGridViewAdapter;
 import pt.isec.a21210827.fourinrow.R;
@@ -33,6 +34,7 @@ public class GameEngine {
     private GridView gridViewGame;
     private Chronometer mChronometer;
     private TextView tvPlayerName, tvScore;
+    private Communication comn;
 
     public static GameEngine getInstance() {
         if (instance == null) {
@@ -41,8 +43,9 @@ public class GameEngine {
         return instance;
     }
 
-    public void startGame(final Context context, final GridView gvGame, final Game gameInstance, final Chronometer mChrono, final TextView tvPlayer, final TextView score) { //TODO: Modificar este cronometro para dentro do gameInstance
+    public void startGame(final Context context, final GridView gvGame, final Game gameInstance, final Chronometer mChrono, final TextView tvPlayer, final TextView score, final Communication com) { //TODO: Modificar este cronometro para dentro do gameInstance
 
+        this.comn = com;
         gridViewGame = gvGame;
         game = gameInstance;
         mChronometer = mChrono;
