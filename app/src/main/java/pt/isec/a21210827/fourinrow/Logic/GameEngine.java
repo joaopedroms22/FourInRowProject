@@ -13,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import pt.isec.a21210827.fourinrow.Activity.MainActivity;
@@ -45,6 +47,46 @@ public class GameEngine implements Serializable{
             instance = new GameEngine();
         }
         return instance;
+    }
+    public int [] getList(){
+        return list;
+    }
+
+    public int[] getGameGrid(){ //TODO: CHECKAR ESTE GET PQ ESTÁ A IR BUSCAR A INFORMAÇÃO NA VERTICAL EM VES DA HORIZONTAL
+
+            List<Integer> list = new ArrayList<Integer>();
+            for (int i = 0; i < gameGrid.length; i++) {
+                // tiny change 1: proper dimensions
+                for (int j = 0; j < gameGrid[i].length; j++) {
+                    // tiny change 2: actually store the values
+                    list.add(gameGrid[j][i]);
+                }
+            }
+            // now you need to find a mode in the list.
+
+            // tiny change 3, if you definitely need an array
+            int[] vector = new int[list.size()];
+            for (int i = 0; i < vector.length; i++) {
+                vector[i] = list.get(i);
+            }
+
+        return vector;
+    }
+
+    public void setGameGrid(int[] gameGrid, int size){
+
+        int[][] aux = new int[size][size];
+
+        for(int i=0; i<size;i++)
+            for(int j=0;j<size;j++)
+                aux[i][j] = gameGrid[(j*size) + i];
+
+        this.gameGrid = aux;
+    }
+
+    public void setList(int[] list){
+        this.list = list;
+        gvGame.setAdapter(new GameGridViewAdapter(list, context));
     }
 
     public void startGame(final Context context, final GridView gvGame, final Game gameInstance, final Chronometer mChrono, final TextView tvPlayer, final TextView tvScore) {

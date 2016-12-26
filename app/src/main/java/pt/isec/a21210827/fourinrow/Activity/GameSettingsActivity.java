@@ -97,7 +97,8 @@ public class GameSettingsActivity extends Activity {
                 public void onCheckedChanged(RadioGroup radioGroup, int i) {
                     RadioButton rb = (RadioButton) radioGroup.findViewById(i);
 
-                    if (rb.getText().equals("Cliente")) {
+                    //Fixed the bug of client or server when got choosen
+                    if (rb.getText().equals("Client") || rb.getText().equals("Cliente")) {
                         tvGridSize.setVisibility(View.GONE);
                         rgGridSize.setVisibility(View.GONE);
 

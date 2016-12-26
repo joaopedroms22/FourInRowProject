@@ -40,7 +40,7 @@ import pt.isec.a21210827.fourinrow.Class.Player;
 import pt.isec.a21210827.fourinrow.Logic.GameEngine;
 import pt.isec.a21210827.fourinrow.R;
 
-public class GameActivity extends Activity implements Serializable{
+public class GameActivity extends Activity{
 
     private GridView gvGame;
     private TextView tvGameMode, tvPlayerName, tvScore;
@@ -98,16 +98,30 @@ public class GameActivity extends Activity implements Serializable{
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //Problema a serializar o chronometro
-        outState.putSerializable("game", GameEngine.getInstance());
+        //Todo: guardar o jogador que está ativo de momento
+
+        //Guarda a lista que contem os drawables, da gridView
+        outState.putIntArray("list", GameEngine.getInstance().getList());
+
+        //Guarda o arrayList[][] que contem onde as peças foram colocadas!
+        outState.putIntArray("gameGrid", GameEngine.getInstance().getGameGrid());
+
+        //Guarda o tamanho do do tabuleiro
+        outState.putInt("size", gameInstance.getSize());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        //GameEngine saved = (GameEngine) savedInstanceState.getSerializable("game");
-        //GameEngine.changeGameInstance(saved);
+        //Aqui restora a Grid com a informação referente ao jogo!
+        int[] gameGrid = savedInstanceState.getIntArray("gameGrid");
+        int size = savedInstanceState.getInt("size");
+        GameEngine.getInstance().setGameGrid(gameGrid,size);
+
+        //Aqui guarda a informação referente ao desenho presente na gridView
+        int[] saved =  savedInstanceState.getIntArray("list");
+        GameEngine.getInstance().setList(saved);
 
     }
 }
