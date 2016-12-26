@@ -49,7 +49,7 @@
             android:layout_height="match_parent"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:text="Nome do Jogador 2:" />
+            android:text="@string/nome_do_jogador_2" />
 
         <EditText
             android:id="@+id/etPlayerName2"
@@ -71,7 +71,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:text="Tamanho do Tabuleiro: " />
+            android:text="@string/tamanho_do_tabuleiro" />
 
         <RadioGroup
             android:id="@+id/rgGridSize"
@@ -110,7 +110,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:text="Cor das Peças: " />
+            android:text="@string/cor_das_pecas" />
 
         <RadioGroup
             android:id="@+id/rgColorPiece"
@@ -122,13 +122,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="Vermelho" />
+                android:text="@string/vermelho" />
 
             <RadioButton
                 android:id="@+id/rbPreto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Preto" />
+                android:text="@string/preto" />
 
         </RadioGroup>
     </LinearLayout>
@@ -144,7 +144,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:text="Tipo de Cliente " />
+            android:text="@string/tipo_de_cliente" />
 
         <RadioGroup
             android:id="@+id/rgMode"
@@ -155,14 +155,14 @@
                 android:id="@+id/rbClient"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cliente" />
+                android:text="@string/cliente" />
 
             <RadioButton
                 android:id="@+id/rbServer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="Servidor" />
+                android:text="@string/servidor" />
 
         </RadioGroup>
     </LinearLayout>

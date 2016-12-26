@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -39,7 +40,7 @@ import pt.isec.a21210827.fourinrow.Class.Player;
 import pt.isec.a21210827.fourinrow.Logic.GameEngine;
 import pt.isec.a21210827.fourinrow.R;
 
-public class GameActivity extends Activity {
+public class GameActivity extends Activity implements Serializable{
 
     private GridView gvGame;
     private TextView tvGameMode, tvPlayerName, tvScore;
@@ -61,7 +62,7 @@ public class GameActivity extends Activity {
         Communication com = (Communication) getApplication();
 
         //Desenha o Tabuleiro
-        GameEngine.getInstance().startGame(this, gvGame, gameInstance, gameChronometer, tvPlayerName, tvScore, com);
+        GameEngine.getInstance().startGame(this, gvGame, gameInstance, gameChronometer, tvPlayerName, tvScore);
 
     }
 
@@ -93,4 +94,20 @@ public class GameActivity extends Activity {
         gameChronometer = (Chronometer) findViewById(R.id.gameChronometer);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //Problema a serializar o chronometro
+        outState.putSerializable("game", GameEngine.getInstance());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        //GameEngine saved = (GameEngine) savedInstanceState.getSerializable("game");
+        //GameEngine.changeGameInstance(saved);
+
+    }
 }

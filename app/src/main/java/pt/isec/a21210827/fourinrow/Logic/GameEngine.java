@@ -1,6 +1,5 @@
 package pt.isec.a21210827.fourinrow.Logic;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +12,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.Random;
 
 import pt.isec.a21210827.fourinrow.Activity.MainActivity;
@@ -22,19 +22,23 @@ import pt.isec.a21210827.fourinrow.Class.GameGridViewAdapter;
 import pt.isec.a21210827.fourinrow.R;
 import pt.isec.a21210827.fourinrow.Activity.GameSettingsActivity;
 
-public class GameEngine {
+public class GameEngine implements Serializable{
 
+    private static GameEngine instance;
+
+    //Generic Variables
     private int[][] gameGrid;
     private int[] list;
     private int posx, posy, posyFinal, activePlayer, size, turns = 0;
 
-    private static GameEngine instance;
-    private Context contextApplication;
+    //Class Objects
     private Game game;
-    private GridView gridViewGame;
-    private Chronometer mChronometer;
-    private TextView tvPlayerName, tvScore;
-    private Communication comn;
+    private Context context;
+
+    //Views
+    private GridView gvGame;
+    private Chronometer mChrono;
+    private TextView tvPlayer, tvScore;
 
     public static GameEngine getInstance() {
         if (instance == null) {
@@ -43,19 +47,18 @@ public class GameEngine {
         return instance;
     }
 
-    public void startGame(final Context context, final GridView gvGame, final Game gameInstance, final Chronometer mChrono, final TextView tvPlayer, final TextView score, final Communication com) { //TODO: Modificar este cronometro para dentro do gameInstance
+    public void startGame(final Context context, final GridView gvGame, final Game gameInstance, final Chronometer mChrono, final TextView tvPlayer, final TextView tvScore) {
 
-        this.comn = com;
-        gridViewGame = gvGame;
-        game = gameInstance;
-        mChronometer = mChrono;
-        tvPlayerName = tvPlayer;
-        tvScore = score;
+        this.gvGame = gvGame;
+        this.context = context;
+        this.game = gameInstance;
+        this.mChrono = mChrono;
+        this.tvPlayer = tvPlayer;
+        this.tvScore = tvScore;
+
         size = gameInstance.getSize();
-
         gameGrid = new int[size][size];
         list = new int[size * size];
-        contextApplication = context;
 
         //INICIALIZA A GAME GRID TODA A -1
         for (int i = 0; i < gameGrid.length; i++) {
@@ -73,7 +76,7 @@ public class GameEngine {
         gvGame.setAdapter(new GameGridViewAdapter(list, context));
 
         //Dá inicio á contagem do cronometro
-        mChronometer.start();
+        mChrono.start();
 
         //Inicia os Scores!
         tvScore.setText(game.getPlayers().get(0).getName() + ": " + game.getPlayers().get(0).getScore() + "   &&   " + game.getPlayers().get(1).getName() + ": " + game.getPlayers().get(1).getScore());
@@ -82,7 +85,7 @@ public class GameEngine {
         Random random = new Random();
         int r = random.nextInt(2);
         game.getPlayers().get(r).setActivePlayer(true);
-        tvPlayerName.setText(game.getPlayers().get(r).getName());
+        tvPlayer.setText(game.getPlayers().get(r).getName());
 
         //Verifica se o primeiro a jogar é o BOT Roberto, se for faz a jogada dele e troca de jogador!
         checkIfBotIsFirst();
@@ -107,7 +110,7 @@ public class GameEngine {
 
                 if (checkEndGame(posx, posyFinal)) {//todo: fazer esta verificação só à 4 iteração!
                     saveScore();
-                    saveElapsedTime(mChronometer);
+                    saveElapsedTime(mChrono);
                     winnerDialogBox(context, "Ganhou o Jogador: " + game.getPlayers().get(activePlayer).getName().toString());
                 } else {
                     switchPlayer();
@@ -150,20 +153,20 @@ public class GameEngine {
 
             case GameSettingsActivity.S_SINGLE_PLAYER:
                 if (game.getPlayers().get(0).isActivePlayer()) {
-                    tvPlayerName.setText(game.getPlayers().get(1).getName());
+                    tvPlayer.setText(game.getPlayers().get(1).getName());
                     game.getPlayers().get(0).setActivePlayer(false);
                     botMove();
                 } else {
-                    tvPlayerName.setText(game.getPlayers().get(0).getName());
+                    tvPlayer.setText(game.getPlayers().get(0).getName());
                     game.getPlayers().get(0).setActivePlayer(true);
                 }
 
             case GameSettingsActivity.S_MULTIPLAYER_LOCAL:
                 if (game.getPlayers().get(0).isActivePlayer()) {
-                    tvPlayerName.setText(game.getPlayers().get(1).getName());
+                    tvPlayer.setText(game.getPlayers().get(1).getName());
                     game.getPlayers().get(0).setActivePlayer(false);
                 } else {
-                    tvPlayerName.setText(game.getPlayers().get(0).getName());
+                    tvPlayer.setText(game.getPlayers().get(0).getName());
                     game.getPlayers().get(0).setActivePlayer(true);
                 }
                 break;
@@ -184,7 +187,7 @@ public class GameEngine {
 
         //Se o tabuleiro já se encontrar preenchido acaba o jogo, com um empate!
         if (turns == (size * size)) {
-            winnerDialogBox(contextApplication, "Empate!");
+            winnerDialogBox(context, "Empate!");
             return false;
         }
 
@@ -193,7 +196,7 @@ public class GameEngine {
 
             //Se o array já esitver cheio não deixa inserir mais nenhum valor.
             if (gameGrid[posx][0] != -1) {
-                Toast.makeText(contextApplication, "Move Not Allowed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Move Not Allowed", Toast.LENGTH_SHORT).show();
                 return false;
             }
             // Verifica se a posição onde está se encontra vazia, se sim continua a procura até encotrar uma que não esteja.
@@ -234,7 +237,7 @@ public class GameEngine {
             }
 
             if (pieceCounter == 4) {
-                Toast.makeText(contextApplication, "Game Ended Vertically", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Game Ended Vertically", Toast.LENGTH_SHORT).show();
                 return true;
             }
         }
@@ -262,7 +265,7 @@ public class GameEngine {
             }
 
             if (pieceCounter == 5) {
-                Toast.makeText(contextApplication, "Game Ended Horizontal", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Game Ended Horizontal", Toast.LENGTH_SHORT).show();
                 return true;
             }
         }
@@ -292,7 +295,7 @@ public class GameEngine {
             }
 
             if (pieceCounter == 5) {
-                Toast.makeText(contextApplication, "Game Ended Diagonal Right", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Game Ended Diagonal Right", Toast.LENGTH_SHORT).show();
                 return true;
             }
         }
@@ -322,16 +325,16 @@ public class GameEngine {
             }
 
             if (pieceCounter == 5) {
-                Toast.makeText(contextApplication, "Game Ended Diagonal Left", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Game Ended Diagonal Left", Toast.LENGTH_SHORT).show();
                 return true;
             }
         }
         return false;
     }
 
-    private void saveElapsedTime(Chronometer mChronometer) {
-        mChronometer.stop();
-        game.setGameTime(SystemClock.elapsedRealtime() - mChronometer.getBase());
+    private void saveElapsedTime(Chronometer mChrono) {
+        mChrono.stop();
+        game.setGameTime(SystemClock.elapsedRealtime() - mChrono.getBase());
     }
 
     private void restartGame() {
@@ -349,8 +352,8 @@ public class GameEngine {
         }
 
         //Reinicia o chronometro
-        mChronometer.setBase(SystemClock.elapsedRealtime());
-        mChronometer.start();
+        mChrono.setBase(SystemClock.elapsedRealtime());
+        mChrono.start();
 
         //Reinicia o activePlayer = false
         game.getPlayers().get(0).setActivePlayer(false);
@@ -360,12 +363,12 @@ public class GameEngine {
         Random random = new Random();
         int r = random.nextInt(2);
         game.getPlayers().get(r).setActivePlayer(true);
-        tvPlayerName.setText(game.getPlayers().get(r).getName());
+        tvPlayer.setText(game.getPlayers().get(r).getName());
 
         //Se o modo de jogo for Single Player e for o Bot Roberto que esteja activo como o 1º a jogar, então vai fazer a jogada do bot!
         checkIfBotIsFirst();
 
-        gridViewGame.setAdapter(new GameGridViewAdapter(list, contextApplication));
+        gvGame.setAdapter(new GameGridViewAdapter(list, context));
     }
 
     private void botMove() {
@@ -385,13 +388,13 @@ public class GameEngine {
             } else {
                 list[(size * posyFinal) + posx] = R.drawable.circle_shape_yellow;
             }
-            gridViewGame.setAdapter(new GameGridViewAdapter(list, contextApplication));
+            gvGame.setAdapter(new GameGridViewAdapter(list, context));
         }
 
         if (checkEndGame(posx, posyFinal)) { //todo: fazer esta verificação só à 4 iteração!
             saveScore();
-            saveElapsedTime(mChronometer);
-            winnerDialogBox(contextApplication, "Ganhou o Jogador: " + game.getPlayers().get(activePlayer).getName().toString());
+            saveElapsedTime(mChrono);
+            winnerDialogBox(context, "Ganhou o Jogador: " + game.getPlayers().get(activePlayer).getName().toString());
         }
     }
 
@@ -425,10 +428,10 @@ public class GameEngine {
     private void whoIsActive() {
 
         if (game.getPlayers().get(0).isActivePlayer()) {
-            tvPlayerName.setText(game.getPlayers().get(0).getName().toString());
+            tvPlayer.setText(game.getPlayers().get(0).getName().toString());
             activePlayer = 0;
         } else {
-            tvPlayerName.setText(game.getPlayers().get(1).getName().toString());
+            tvPlayer.setText(game.getPlayers().get(1).getName().toString());
             activePlayer = 1;
         }
     }

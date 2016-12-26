@@ -2,13 +2,18 @@ package pt.isec.a21210827.fourinrow.Activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import java.util.Locale;
 
 import pt.isec.a21210827.fourinrow.R;
 
@@ -36,16 +41,11 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 
         //View do imageButton para traslate para Portugues
         ibPortuguese = (ImageButton) findViewById(R.id.ibPortuguese);
+        ibPortuguese.setOnClickListener(this);
 
         //View do imageButton para traslate para Inglês
         ibEnglish = (ImageButton) findViewById(R.id.ibEnglish);
-
-        ibEnglish.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Traduz para Inglês", Toast.LENGTH_SHORT).show();
-            }
-        });
+        ibEnglish.setOnClickListener(this);
 
         //View do Button para Novo Jogo - 1 Jogador
         btOnePlayer = (Button) findViewById(R.id.btOnePlayer);
@@ -96,6 +96,28 @@ public class MainActivity extends Activity implements Button.OnClickListener{
             case R.id.btCredits:
                 intent = new Intent(getApplicationContext(), CreditosActivity.class);
                 startActivity(intent);
+                break;
+
+            case R.id.ibEnglish:
+                setLocale("en");
+                break;
+
+            case R.id.ibPortuguese:
+                setLocale("pt");
+                break;
         }
+    }
+
+    public void setLocale(String lang) {
+        Locale myLocale;
+
+        myLocale = new Locale(lang);
+        Resources res = getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+        conf.locale = myLocale;
+        res.updateConfiguration(conf, dm);
+        Intent refresh = new Intent(this, MainActivity.class);
+        startActivity(refresh);
     }
 }

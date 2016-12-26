@@ -10,6 +10,7 @@ public class Player implements Serializable {
     private String name;
     private int score;
     private String colorPart;
+    private int clientMode;
     private boolean activePlayer;
 
     public Player(){
@@ -52,5 +53,13 @@ public class Player implements Serializable {
 
     public void setActivePlayer(boolean activePlayer) {
         this.activePlayer = activePlayer;
+    }
+
+    public int getClientMode() {
+        return clientMode;
+    }
+
+    public void setClientMode(int clientMode) {
+        this.clientMode = clientMode;
     }
 }

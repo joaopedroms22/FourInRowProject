@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Four In Row</string>
+    <string name="carregar_jogo">Load Game</string>
+    <string name="comecar_jogo">Start Game</string>
+    <string name="cr_ditos">Credits</string>
+    <string name="dois_jogadores_local">Two Player - Local</string>
+    <string name="dois_jogadores_online">Two Players - Online</string>
+    <string name="insira_o_seu_nome_aqui">Insert your name here</string>
+    <string name="modo_de_jogo_um_jogador">Game Mode - One Player</string>
+    <string name="nome_do_jogador">Player name:</string>
+    <string name="quatro_em_linha">Four in Row</string>
+    <string name="um_jogador">One Player</string>
+    <string name="hist_rico_de_jogos">Game Historic</string>
+    <string name="nome_do_jogador_2">Player name 2:</string>
+    <string name="preto">Black</string>
+    <string name="servidor">Server</string>
+    <string name="tamanho_do_tabuleiro">Size of Board:</string>
+    <string name="tipo_de_cliente">Player Type:</string>
+    <string name="vermelho">Red</string>
+    <string name="cor_das_pecas">Piece Color:</string>
+    <string name="cliente">Client</string>
+    <string name="scoreboard">Scoreboard</string>
+    <string name="tempo">Time:</string>
+    <string name="pontuacao">Score:</string>
+    <string name="nome_jogador">Player Name:</string>
+    <string name="modo_de_jogo">Game Mode:</string>
+</resources>

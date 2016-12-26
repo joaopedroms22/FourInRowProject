@@ -1,18 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Four In Row</string>
-    <string name="quatro_em_linha">Quatro em Linha</string>
     <string name="carregar_jogo">Carregar Jogo</string>
+    <string name="comecar_jogo">Começar Jogo</string>
     <string name="cr_ditos">Créditos</string>
     <string name="dois_jogadores_local">Dois Jogadores - Local</string>
-    <string name="hist_rico_de_jogos">Histórico de Jogos</string>
     <string name="dois_jogadores_online">Dois Jogadores - Online</string>
-    <string name="um_jogador">Um Jogador</string>
-    <string name="english_flag">English Flag</string>
-    <string name="portuguese_flag">Portuguese Flag</string>
-    <string name="comecar_jogo">Começar Jogo</string>
+    <string name="hist_rico_de_jogos">Histórico de Jogos</string>
     <string name="insira_o_seu_nome_aqui">Insira o seu nome aqui!</string>
     <string name="modo_de_jogo_um_jogador">Modo de Jogo - Um Jogador</string>
     <string name="nome_do_jogador">Nome do Jogador:</string>
+    <string name="quatro_em_linha">Quatro em Linha</string>
+    <string name="um_jogador">Um Jogador</string>
     <string name="nome_do_jogador_2">Nome do Jogador 2:</string>
     <string name="tamanho_do_tabuleiro">Tamanho do Tabuleiro:</string>
     <string name="cor_das_pecas">Cor das Peças:</string>

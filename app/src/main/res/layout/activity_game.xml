@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:text="Scoreboard"
+            android:text="@string/scoreboard"
             android:textSize="25sp" />
 
         <LinearLayout
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:paddingTop="15dp"
-                android:text="Modo de Jogo: "
+                android:text="@string/modo_de_jogo"
                 android:textSize="15sp" />
 
             <TextView
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:paddingTop="5dp"
-                android:text="Nome Jogador: "
+                android:text="@string/nome_jogador"
                 android:textSize="15sp" />
 
             <TextView
@@ -84,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:paddingTop="5dp"
-                android:text="Pontuação: "
+                android:text="@string/pontuacao"
                 android:textSize="15sp" />
 
             <TextView
@@ -107,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:paddingTop="5dp"
-                android:text="Tempo: "
+                android:text="@string/tempo"
                 android:textSize="15sp" />
 
             <Chronometer

@@ -58,6 +58,7 @@ public class GameSettingsActivity extends Activity {
     RadioGroup rgGridSize, rgColorPiece, rgMode;
 
     private static final int PORT = 8899;
+    private static final int PORTaux = 9988;
     Communication com;
     ServerSocket serverSocket = null;
 
@@ -219,10 +220,10 @@ public class GameSettingsActivity extends Activity {
                             com.getGameInstance().getPlayers().add(new Player(etPlayerName.getText().toString()));
                             clientDlg();
 
-                            intent = new Intent(getApplicationContext(), GameActivity.class);
+                            /*intent = new Intent(getApplicationContext(), GameActivity.class);
                             intent.putExtra("Game", com.getGameInstance());
                             startActivity(intent);
-                            finish();
+                            finish();*/
 
                             break;
 
@@ -231,10 +232,10 @@ public class GameSettingsActivity extends Activity {
                             com.getGameInstance().getPlayers().add(new Player(etPlayerName.getText().toString()));
                             serverDlg();
 
-                            intent = new Intent(getApplicationContext(), GameActivity.class);
+                            /*intent = new Intent(getApplicationContext(), GameActivity.class);
                             intent.putExtra("Game", com.getGameInstance());
                             startActivity(intent);
-                            finish();
+                            finish();*/
 
                             break;
 
