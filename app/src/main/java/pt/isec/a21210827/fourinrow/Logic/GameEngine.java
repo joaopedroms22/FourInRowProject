@@ -13,12 +13,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,7 +60,7 @@ public class GameEngine implements Serializable{
         return list;
     }
 
-    public int[] getGameGrid(){ //TODO: CHECKAR ESTE GET PQ ESTÁ A IR BUSCAR A INFORMAÇÃO NA VERTICAL EM VES DA HORIZONTAL
+    public int[] getGameGrid(){
 
             List<Integer> list = new ArrayList<>();
             for (int i = 0; i < gameGrid.length; i++) {

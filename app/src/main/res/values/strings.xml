@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Four In Row</string>
     <string name="quatro_em_linha">Quatro em Linha</string>
-    <string name="carregar_jogo">Carregar Jogo</string>
+    <string name="carregar_jogo">Carregar Último Jogo</string>
     <string name="cr_ditos">Créditos</string>
     <string name="dois_jogadores_local">Dois Jogadores - Local</string>
     <string name="hist_rico_de_jogos">Histórico de Jogos</string>
@@ -27,4 +27,6 @@
     <string name="pontuacao">Pontuação:</string>
     <string name="tempo">Tempo:</string>
     <string name="historico_de_jogos">Histórico de Jogos</string>
+    <string name="ganhou">Ganhou:</string>
+    <string name="perdeu">Perdeu:</string>
 </resources>

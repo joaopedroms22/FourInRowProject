@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Four In Row</string>
-    <string name="carregar_jogo">Load Game</string>
+    <string name="carregar_jogo">Load Last Game</string>
     <string name="comecar_jogo">Start Game</string>
     <string name="cr_ditos">Credits</string>
     <string name="dois_jogadores_local">Two Player - Local</string>
@@ -26,4 +26,6 @@
     <string name="nome_jogador">Player Name:</string>
     <string name="modo_de_jogo">Game Mode:</string>
     <string name="historico_de_jogos">Game Historic</string>
+    <string name="ganhou">Win:</string>
+    <string name="perdeu">Lose:</string>
 </resources>
