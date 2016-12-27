@@ -64,6 +64,7 @@ public class MainActivity extends Activity implements Button.OnClickListener{
 
         //View do Button para o Histórico de Jogos realizados
         btHighscore = (Button) findViewById(R.id.btHighscore);
+        btHighscore.setOnClickListener(this);
 
         //View do Button para os Créditos do Jogo
         btCredits = (Button) findViewById(R.id.btCredits);
@@ -90,6 +91,11 @@ public class MainActivity extends Activity implements Button.OnClickListener{
             case R.id.btTwoPlayerOnline:
                 intent = new Intent(getApplicationContext(), GameSettingsActivity.class);
                 intent.putExtra("mode", GameSettingsActivity.MULTIPLAYER_ONLINE);
+                startActivity(intent);
+                break;
+
+            case R.id.btHighscore:
+                intent = new Intent(getApplicationContext(), HistoricActivity.class);
                 startActivity(intent);
                 break;
 

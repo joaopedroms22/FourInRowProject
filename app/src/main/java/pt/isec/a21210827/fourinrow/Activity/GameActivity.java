@@ -1,42 +1,14 @@
 package pt.isec.a21210827.fourinrow.Activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
-import android.util.Log;
-import android.view.View;
 import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.Chronometer;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.util.Enumeration;
 
 import pt.isec.a21210827.fourinrow.Class.Communication;
 import pt.isec.a21210827.fourinrow.Class.Game;
-import pt.isec.a21210827.fourinrow.Class.GameGridViewAdapter;
-import pt.isec.a21210827.fourinrow.Class.Player;
 import pt.isec.a21210827.fourinrow.Logic.GameEngine;
 import pt.isec.a21210827.fourinrow.R;
 
@@ -73,7 +45,7 @@ public class GameActivity extends Activity{
         tvPlayerName.setText(gameInstance.getPlayers().get(0).getName());
 
         //Adicona o tipo de Jogo ao ecra
-        tvGameMode.setText(gameInstance.getGameMode().toString());
+        tvGameMode.setText(gameInstance.getGameMode());
     }
 
     private void setFindViewbyId() {
@@ -106,6 +78,8 @@ public class GameActivity extends Activity{
         //Guarda o arrayList[][] que contem onde as peças foram colocadas!
         outState.putIntArray("gameGrid", GameEngine.getInstance().getGameGrid());
 
+        outState.putSerializable("game", GameEngine.getInstance().getActiveGame());
+
         //Guarda o tamanho do do tabuleiro
         outState.putInt("size", gameInstance.getSize());
     }
@@ -114,7 +88,7 @@ public class GameActivity extends Activity{
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        //Aqui restora a Grid com a informação referente ao jogo!
+        //Aqui restora a Grid com a informação referente ao jogo
         int[] gameGrid = savedInstanceState.getIntArray("gameGrid");
         int size = savedInstanceState.getInt("size");
         GameEngine.getInstance().setGameGrid(gameGrid,size);
@@ -123,5 +97,9 @@ public class GameActivity extends Activity{
         int[] saved =  savedInstanceState.getIntArray("list");
         GameEngine.getInstance().setList(saved);
 
+        //Restora a instancia de jogo, onde contem o toda a informação relativa ao jogo
+        Game game = (Game) savedInstanceState.getSerializable("game");
+        GameEngine.getInstance().setActiveGame(game);
     }
+
 }

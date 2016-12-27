@@ -25,4 +25,5 @@
     <string name="pontuacao">Score:</string>
     <string name="nome_jogador">Player Name:</string>
     <string name="modo_de_jogo">Game Mode:</string>
+    <string name="historico_de_jogos">Game Historic</string>
 </resources>

@@ -3,21 +3,20 @@ package pt.isec.a21210827.fourinrow.Class;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
- * Created by joaop on 11/5/2016.
- */
 
 public class Game implements Serializable{
-    ArrayList<Player> players; //Array que contém 2 objectos de Player, onde contem as especificações de cada jogador
-    String gameMode; //Tipo de Jogo: 0 - SinglePlayer, 1 - MultiplayerLocal, 2 - MultiplayerTCP
-    String winner; //Nome do jogador vencedor
-    long gameTime; //Tempo que demorou a terminar um jogo
-    int size; //Tamanho do Board
+    private ArrayList<Player> players; //Array que contém 2 objectos de Player, onde contem as especificações de cada jogador
+    private String gameMode; //Tipo de Jogo: 0 - SinglePlayer, 1 - MultiplayerLocal, 2 - MultiplayerTCP
+    private int winner; //Nome do jogador vencedor
+    private long gameTime; //Tempo que demorou a terminar um jogo
+    private int size; //Tamanho do Board
+    private int turns; //Turnos Jogados
 
 
     public Game(){
-        players = new ArrayList<Player>();
+        players = new ArrayList<>();
         gameTime = 0;
+        turns = 0;
     }
 
     public ArrayList<Player> getPlayers() {
@@ -26,14 +25,6 @@ public class Game implements Serializable{
 
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
-    }
-
-    public String getWinner() {
-        return winner;
-    }
-
-    public void setWinner(String winner) {
-        this.winner = winner;
     }
 
     public int getSize() {
@@ -58,5 +49,25 @@ public class Game implements Serializable{
 
     public void setGameMode(String gameMode) {
         this.gameMode = gameMode;
+    }
+
+    public int getWinner() {
+        return winner;
+    }
+
+    public void setWinner(int winner) {
+        this.winner = winner;
+    }
+
+    public int getTurns() {
+        return turns;
+    }
+
+    public void addTurn() {
+        this.turns++;
+    }
+
+    public void setTurn(int t) {
+        this.turns = t;
     }
 }

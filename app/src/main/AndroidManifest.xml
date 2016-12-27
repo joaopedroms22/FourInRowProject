@@ -22,7 +22,8 @@
         </activity>
         <activity android:name=".Activity.GameSettingsActivity" />
         <activity android:name=".Activity.GameActivity" />
-        <activity android:name=".Activity.CreditosActivity"></activity>
+        <activity android:name=".Activity.CreditosActivity" />
+        <activity android:name=".Activity.HistoricActivity"></activity>
     </application>
 
 </manifest>

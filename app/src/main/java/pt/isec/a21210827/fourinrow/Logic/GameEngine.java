@@ -1,5 +1,6 @@
 package pt.isec.a21210827.fourinrow.Logic;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,13 +13,20 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 import pt.isec.a21210827.fourinrow.Activity.MainActivity;
-import pt.isec.a21210827.fourinrow.Class.Communication;
 import pt.isec.a21210827.fourinrow.Class.Game;
 import pt.isec.a21210827.fourinrow.Class.GameGridViewAdapter;
 import pt.isec.a21210827.fourinrow.R;
@@ -31,7 +39,11 @@ public class GameEngine implements Serializable{
     //Generic Variables
     private int[][] gameGrid;
     private int[] list;
-    private int posx, posy, posyFinal, activePlayer, size, turns = 0;
+    private int posx;
+    private int posy;
+    private int posyFinal;
+    private int activePlayer;
+    private int size;
 
     //Class Objects
     private Game game;
@@ -48,13 +60,14 @@ public class GameEngine implements Serializable{
         }
         return instance;
     }
+
     public int [] getList(){
         return list;
     }
 
     public int[] getGameGrid(){ //TODO: CHECKAR ESTE GET PQ ESTÁ A IR BUSCAR A INFORMAÇÃO NA VERTICAL EM VES DA HORIZONTAL
 
-            List<Integer> list = new ArrayList<Integer>();
+            List<Integer> list = new ArrayList<>();
             for (int i = 0; i < gameGrid.length; i++) {
                 // tiny change 1: proper dimensions
                 for (int j = 0; j < gameGrid[i].length; j++) {
@@ -87,6 +100,15 @@ public class GameEngine implements Serializable{
     public void setList(int[] list){
         this.list = list;
         gvGame.setAdapter(new GameGridViewAdapter(list, context));
+    }
+
+    public Game getActiveGame(){
+        return game;
+    }
+
+    public void setActiveGame(Game game){
+        this.game = game;
+        whoIsActive();
     }
 
     public void startGame(final Context context, final GridView gvGame, final Game gameInstance, final Chronometer mChrono, final TextView tvPlayer, final TextView tvScore) {
@@ -153,7 +175,7 @@ public class GameEngine implements Serializable{
                 if (checkEndGame(posx, posyFinal)) {//todo: fazer esta verificação só à 4 iteração!
                     saveScore();
                     saveElapsedTime(mChrono);
-                    winnerDialogBox(context, "Ganhou o Jogador: " + game.getPlayers().get(activePlayer).getName().toString());
+                    winnerDialogBox(context, "Ganhou o Jogador: " + game.getPlayers().get(activePlayer).getName());
                 } else {
                     switchPlayer();
                 }
@@ -166,8 +188,37 @@ public class GameEngine implements Serializable{
 
         //Incrementa o Score dos jogadores sempre que vencerem um jogo!
         game.getPlayers().get(activePlayer).setScore(score + 1);
+        game.setWinner(activePlayer);
+
+        saveOnFile();
 
         tvScore.setText(game.getPlayers().get(0).getName() + ": " + game.getPlayers().get(0).getScore() + "   &&   " + game.getPlayers().get(1).getName() + ": " + game.getPlayers().get(1).getScore());
+    }
+
+    private void saveOnFile() {
+
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd").format(new Date());
+        int winner = game.getWinner();
+        int loser;
+
+        if(winner == 0){
+            loser = 1;
+        }else{
+            loser = 0;
+        }
+
+        String filename = "gameHistoric.txt";
+        String string = "(" + timeStamp + ")" + " - " + "Ganhou: " + game.getPlayers().get(winner).getName() + "  Perdeu: " + game.getPlayers().get(loser).getName() + "\n\n";
+        FileOutputStream outputStream;
+
+        try {
+            outputStream = context.openFileOutput(filename, Context.MODE_APPEND);
+            outputStream.write(string.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void winnerDialogBox(final Context context, String message) {
@@ -178,7 +229,8 @@ public class GameEngine implements Serializable{
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(context, MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);  //TODO: DAR FINISH A ESTA ACTIVITY!
+                        context.startActivity(intent);
+                        ((Activity) context).finish();
                     }
                 })
                 .setNegativeButton("Restart", new DialogInterface.OnClickListener() {
@@ -219,16 +271,15 @@ public class GameEngine implements Serializable{
     }
 
     private boolean checkEndGame(int posx, int posy) {
-        if (checkDiagonalRight(posx, posy) || checkDiagonalLeft(posx, posy) || checkHorizontal(posx, posy) || checkVertical(posx, posy))
-            return true;
 
-        return false;
+        return checkDiagonalRight(posx, posy) || checkDiagonalLeft(posx, posy) || checkHorizontal(posx, posy) || checkVertical(posx, posy);
+
     }
 
     private boolean putPiece(int[][] gameGrid, int posx) {
 
         //Se o tabuleiro já se encontrar preenchido acaba o jogo, com um empate!
-        if (turns == (size * size)) {
+        if (game.getTurns() == (size * size)) {
             winnerDialogBox(context, "Empate!");
             return false;
         }
@@ -236,7 +287,7 @@ public class GameEngine implements Serializable{
         //Vai verificar todos os y, daquele x, o ultimo que tenha o valor -1, para poder adicionar o valor.
         for (int i = 0; i < gameGrid.length; i++) {
 
-            //Se o array já esitver cheio não deixa inserir mais nenhum valor.
+            //Se o array já estiver cheio não deixa inserir mais nenhum valor.
             if (gameGrid[posx][0] != -1) {
                 Toast.makeText(context, "Move Not Allowed", Toast.LENGTH_SHORT).show();
                 return false;
@@ -249,14 +300,14 @@ public class GameEngine implements Serializable{
             else {
                 gameGrid[posx][i - 1] = activePlayer;
                 posyFinal = i - 1;
-                turns++;
+                game.addTurn();
                 return true;
             }
         }
         //Se percorrer o array inteiro e não encontrar nenhum valor inserido, estamos perante um array vazio, logo vamos adicionar a peça na ultima posição do array.
         gameGrid[posx][gameGrid.length - 1] = activePlayer; // todo: Modificar o "0", para a valor respectivo de cada jogador.
         posyFinal = gameGrid.length - 1;
-        turns++;
+        game.addTurn();
         return true;
     }
 
@@ -381,7 +432,7 @@ public class GameEngine implements Serializable{
 
     private void restartGame() {
 
-        turns = 0;
+        game.setTurn(0);
 
         for (int i = 0; i < gameGrid.length; i++) {
             for (int j = 0; j < gameGrid[i].length; j++) {
@@ -436,7 +487,7 @@ public class GameEngine implements Serializable{
         if (checkEndGame(posx, posyFinal)) { //todo: fazer esta verificação só à 4 iteração!
             saveScore();
             saveElapsedTime(mChrono);
-            winnerDialogBox(context, "Ganhou o Jogador: " + game.getPlayers().get(activePlayer).getName().toString());
+            winnerDialogBox(context, "Ganhou o Jogador: " + game.getPlayers().get(activePlayer).getName());
         }
     }
 
@@ -470,10 +521,10 @@ public class GameEngine implements Serializable{
     private void whoIsActive() {
 
         if (game.getPlayers().get(0).isActivePlayer()) {
-            tvPlayer.setText(game.getPlayers().get(0).getName().toString());
+            tvPlayer.setText(game.getPlayers().get(0).getName());
             activePlayer = 0;
         } else {
-            tvPlayer.setText(game.getPlayers().get(1).getName().toString());
+            tvPlayer.setText(game.getPlayers().get(1).getName());
             activePlayer = 1;
         }
     }
