@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 
 import pt.isec.a21210827.fourinrow.Class.Game;
+import pt.isec.a21210827.fourinrow.Logic.GameEngine;
 import pt.isec.a21210827.fourinrow.R;
 
 public class LoadGameActivity extends Activity {
@@ -21,7 +22,7 @@ public class LoadGameActivity extends Activity {
         setContentView(R.layout.activity_load_game);
 
         try {
-            loadGame("lastGame");
+            loadGame(GameEngine.LASTGAME);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -32,7 +33,7 @@ public class LoadGameActivity extends Activity {
 
     private void loadGame(String filename) throws IOException, ClassNotFoundException {
 
-        //File f = new File(getApplicationContext().getFilesDir(), filename);
+
         File f = getFileStreamPath(filename);
 
         if (f.length() == 0) {

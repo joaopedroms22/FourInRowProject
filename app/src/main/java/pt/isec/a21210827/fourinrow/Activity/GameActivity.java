@@ -48,7 +48,7 @@ public class GameActivity extends Activity {
         GameEngine.getInstance().startGame(this, gvGame, gameInstance, gameChronometer, tvPlayerName, tvScore);
 
         //Se for -1 é porque esta atividade nasceu de um loadGame
-        if(flag == -1){
+        if (flag == -1) {
             GameEngine.getInstance().setList(list);
             GameEngine.getInstance().setGameGrid(gameGrid, gameInstance.getSize());
         }
@@ -57,15 +57,15 @@ public class GameActivity extends Activity {
 
     private void receiveIntents() {
 
-            gameInstance = (Game) getIntent().getSerializableExtra("Game");
+        gameInstance = (Game) getIntent().getSerializableExtra("Game");
 
-            //Get 0, pq é o modo 1 Jogador, logo o index vai ser sempre o 1º
-            tvPlayerName.setText(gameInstance.getPlayers().get(0).getName());
+        //Get 0, pq é o modo 1 Jogador, logo o index vai ser sempre o 1º
+        tvPlayerName.setText(gameInstance.getPlayers().get(0).getName());
 
-            //Adicona o tipo de Jogo ao ecra
-            tvGameMode.setText(gameInstance.getGameMode());
+        //Adicona o tipo de Jogo ao ecra
+        tvGameMode.setText(gameInstance.getGameMode());
 
-        if(getIntent().getIntExtra("flag" , 0) == -1){
+        if (getIntent().getIntExtra("flag", 0) == -1) {
             flag = getIntent().getIntExtra("flag", 0);
             list = getIntent().getIntArrayExtra("list");
             gameGrid = getIntent().getIntArrayExtra("gameGrid");
@@ -130,23 +130,29 @@ public class GameActivity extends Activity {
     protected void onStop() {
         super.onStop();
 
-        String filename = "lastGame";
+        Game game = GameEngine.getInstance().getActiveGame();
 
-        try {
-            FileOutputStream fileStream = openFileOutput(filename, Context.MODE_PRIVATE);
-            ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
+        if (!game.isFinished()) {
 
-            objectStream.writeObject(GameEngine.getInstance().getList());
-            objectStream.writeObject(GameEngine.getInstance().getGameGrid());
-            objectStream.writeObject(GameEngine.getInstance().getActiveGame());
+            String filename = "lastGame";
 
-            objectStream.close();
-            fileStream.close();
+            try {
+                FileOutputStream fileStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+                objectStream.writeObject(GameEngine.getInstance().getList());
+                objectStream.writeObject(GameEngine.getInstance().getGameGrid());
+                objectStream.writeObject(GameEngine.getInstance().getActiveGame());
+
+                objectStream.close();
+                fileStream.close();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
+
 }

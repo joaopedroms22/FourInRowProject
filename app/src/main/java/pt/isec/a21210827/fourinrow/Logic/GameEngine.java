@@ -27,7 +27,11 @@ import pt.isec.a21210827.fourinrow.Class.GameGridViewAdapter;
 import pt.isec.a21210827.fourinrow.R;
 import pt.isec.a21210827.fourinrow.Activity.GameSettingsActivity;
 
+
+
 public class GameEngine implements Serializable{
+
+    final public static String LASTGAME = "lastGame";
 
     private static GameEngine instance;
 
@@ -222,6 +226,8 @@ public class GameEngine implements Serializable{
                 .setMessage(message)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        game.setFinished(true);
+                        context.deleteFile(LASTGAME);
                         Intent intent = new Intent(context, MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         context.startActivity(intent);

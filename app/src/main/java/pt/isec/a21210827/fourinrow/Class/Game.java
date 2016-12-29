@@ -11,12 +11,14 @@ public class Game implements Serializable{
     private long gameTime; //Tempo que demorou a terminar um jogo
     private int size; //Tamanho do Board
     private int turns; //Turnos Jogados
+    private boolean finished; //Jogo terminado
 
 
     public Game(){
-        players = new ArrayList<>();
-        gameTime = 0;
-        turns = 0;
+        this.finished = false;
+        this.players = new ArrayList<>();
+        this.gameTime = 0;
+        this.turns = 0;
     }
 
     public ArrayList<Player> getPlayers() {
@@ -69,5 +71,13 @@ public class Game implements Serializable{
 
     public void setTurn(int t) {
         this.turns = t;
+    }
+
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
     }
 }
