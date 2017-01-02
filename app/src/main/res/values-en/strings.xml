@@ -28,4 +28,5 @@
     <string name="historico_de_jogos">Game Historic</string>
     <string name="ganhou">Win:</string>
     <string name="perdeu">Lose:</string>
+    <string name="amarelo">Yellow</string>
 </resources>

@@ -29,4 +29,5 @@
     <string name="historico_de_jogos">Histórico de Jogos</string>
     <string name="ganhou">Ganhou:</string>
     <string name="perdeu">Perdeu:</string>
+    <string name="amarelo">Amarelo</string>
 </resources>

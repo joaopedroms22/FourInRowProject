@@ -33,6 +33,7 @@ public class Communication extends Application {
     Game gameInstance;
 
     private static final int PORT = 8899;
+    private static final int PORTaux = 9988;
 
     ProgressDialog pd = null;
 
@@ -81,7 +82,7 @@ public class Communication extends Application {
             @Override
             public void run() {
                 try {
-                    serverSocket = new ServerSocket(PORT);
+                    serverSocket = new ServerSocket(PORTaux);
                     socketGame = serverSocket.accept();
                     serverSocket.close();
                     serverSocket = null;

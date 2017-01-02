@@ -18,11 +18,9 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Trabalho Realizador por:"
         android:id="@+id/textView2"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="25dp"
         android:textStyle="bold"
-        android:textSize="25dp"/>
+        android:textSize="25sp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -30,22 +28,18 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="João Silva - a21210827"
         android:id="@+id/textView3"
-        android:layout_below="@+id/textView2"
         android:paddingTop="15dp"
-        android:textSize="20dp"
-        android:textStyle="italic"
-        android:layout_centerHorizontal="true" />
+        android:textSize="20sp"
+        android:textStyle="italic" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="DEIS \nArquicteturas Móveis \n2015/2016"
+        android:text="DEIS \nArquicteturas Móveis \n2016/2017"
         android:id="@+id/textView4"
-        android:layout_below="@+id/textView3"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:textAlignment="center"/>
 
     <ImageView
@@ -54,8 +48,6 @@
         android:id="@+id/imageView2"
         android:src="@drawable/deis"
         android:layout_marginBottom="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:background="#000000"
         android:padding="3dp"/>
 

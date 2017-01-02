@@ -57,10 +57,7 @@ public class GameSettingsActivity extends Activity {
     Button btStartGame;
     RadioGroup rgGridSize, rgColorPiece, rgMode;
 
-    private static final int PORT = 8899;
-    private static final int PORTaux = 9988;
     Communication com;
-    ServerSocket serverSocket = null;
 
     Intent intent;
     int mode;
@@ -218,25 +215,25 @@ public class GameSettingsActivity extends Activity {
                     switch (getValueRadioGroup(rgMode)) {
                         case 0:
                             //client();
-                            com.getGameInstance().getPlayers().add(new Player(etPlayerName.getText().toString()));
-                            clientDlg();
+                            Player client = new Player(etPlayerName.getText().toString());
+                            client.setClientMode(0);
 
-                            /*intent = new Intent(getApplicationContext(), GameActivity.class);
-                            intent.putExtra("Game", com.getGameInstance());
+                            Intent intent = new Intent(getApplicationContext(), GameActivity.class);
+                            intent.putExtra("client", client);
                             startActivity(intent);
-                            finish();*/
+                            finish();
 
                             break;
 
                         case 1:
                             //server();
-                            com.getGameInstance().getPlayers().add(new Player(etPlayerName.getText().toString()));
-                            serverDlg();
+                            Player server = new Player(etPlayerName.getText().toString());
+                            server.setClientMode(1);
 
-                            /*intent = new Intent(getApplicationContext(), GameActivity.class);
-                            intent.putExtra("Game", com.getGameInstance());
-                            startActivity(intent);
-                            finish();*/
+                            Intent intent2 = new Intent(getApplicationContext(), GameActivity.class);
+                            intent2.putExtra("server", server);
+                            startActivity(intent2);
+                            finish();
 
                             break;
 
@@ -320,47 +317,5 @@ public class GameSettingsActivity extends Activity {
                 break;
         }
 
-    }
-
-    public void clientDlg() {
-
-        final EditText edtIP = new EditText(this);
-        edtIP.setText("192.168.1.117");
-        AlertDialog ad = new AlertDialog.Builder(this).setTitle("Four In Row Client")
-                .setMessage("Server IP").setView(edtIP)
-                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        com.client(edtIP.getText().toString(), PORT); // to test with emulators: PORTaux);
-                    }
-                }).setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        //finish();
-                    }
-                }).create();
-        ad.show();
-    }
-
-    public void serverDlg() {
-
-        ProgressDialog pd;
-
-        String ip = com.getLocalIpAddress();
-        pd = new ProgressDialog(this);
-        pd.setMessage("Waiting for a client..." + "\n(IP: " + ip + ")"); //TODO: Colocar no ficheiro de strings
-        pd.setTitle("Four in Row Server!");
-
-        //setOnCancel é chamado sempre que é feito um back, ou o um toque fora da dialogue box
-        pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                finish();
-            }
-        });
-
-        pd.show();
-
-        com.server(pd);
     }
 }

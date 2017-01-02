@@ -1,10 +1,14 @@
 package pt.isec.a21210827.fourinrow.Activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,9 +18,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
 
 import pt.isec.a21210827.fourinrow.Class.Communication;
 import pt.isec.a21210827.fourinrow.Class.Game;
+import pt.isec.a21210827.fourinrow.Class.Player;
 import pt.isec.a21210827.fourinrow.Logic.GameEngine;
 import pt.isec.a21210827.fourinrow.R;
 
@@ -25,10 +31,15 @@ public class GameActivity extends Activity {
     private GridView gvGame;
     private TextView tvGameMode, tvPlayerName, tvScore;
     private Chronometer gameChronometer;
-    private Game gameInstance;
+    private Game gameInstance = null;
 
-    int[] list, gameGrid;
-    int flag = 0;
+    private int[] list, gameGrid;
+    private int flag = 0;
+
+    private static final int PORT = 8899;
+    private static final int PORTaux = 9988;
+    Communication com;
+    ServerSocket serverSocket = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,13 +47,13 @@ public class GameActivity extends Activity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_game);
 
+        com = (Communication) getApplication();
+
         //Processa todas as view da actividade
         setFindViewbyId();
 
         //Recebe os intents passados das outras activity
         receiveIntents();
-
-        Communication com = (Communication) getApplication();
 
         //Desenha o Tabuleiro
         GameEngine.getInstance().startGame(this, gvGame, gameInstance, gameChronometer, tvPlayerName, tvScore);
@@ -59,8 +70,26 @@ public class GameActivity extends Activity {
 
         gameInstance = (Game) getIntent().getSerializableExtra("Game");
 
+        if(gameInstance == null){
+
+            gameInstance = com.getGameInstance();
+
+            Player client = (Player) getIntent().getSerializableExtra("Client");
+            if(client != null){
+                gameInstance.getPlayers().add(client);
+                clientDlg();
+            }
+
+            Player server = (Player) getIntent().getSerializableExtra("Server");
+            if(server != null){
+                gameInstance.getPlayers().add(server);
+                serverDlg();
+            }
+        }
+
+
         //Get 0, pq é o modo 1 Jogador, logo o index vai ser sempre o 1º
-        tvPlayerName.setText(gameInstance.getPlayers().get(0).getName());
+        //tvPlayerName.setText(gameInstance.getPlayers().get(0).getName());
 
         //Adicona o tipo de Jogo ao ecra
         tvGameMode.setText(gameInstance.getGameMode());
@@ -153,6 +182,48 @@ public class GameActivity extends Activity {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void clientDlg() {
+
+        final EditText edtIP = new EditText(this);
+        edtIP.setText("192.168.1.117");
+        AlertDialog ad = new AlertDialog.Builder(this).setTitle("Four In Row Client")
+                .setMessage("Server IP").setView(edtIP)
+                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        com.client(edtIP.getText().toString(), PORT); // to test with emulators: PORTaux);
+                    }
+                }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        //finish();
+                    }
+                }).create();
+        ad.show();
+    }
+
+    public void serverDlg() {
+
+        ProgressDialog pd;
+
+        String ip = com.getLocalIpAddress();
+        pd = new ProgressDialog(this);
+        pd.setMessage("Waiting for a client..." + "\n(IP: " + ip + ")"); //TODO: Colocar no ficheiro de strings
+        pd.setTitle("Four in Row Server!");
+
+        //setOnCancel é chamado sempre que é feito um back, ou o um toque fora da dialogue box
+        pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                finish();
+            }
+        });
+
+        pd.show();
+
+        com.server(pd);
     }
 
 }
