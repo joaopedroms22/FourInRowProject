@@ -1,5 +1,6 @@
 package pt.isec.a21210827.fourinrow.Class;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Application;
 import android.app.ProgressDialog;
@@ -32,6 +33,7 @@ import java.util.Enumeration;
 import java.util.Random;
 
 import pt.isec.a21210827.fourinrow.Activity.GameActivity;
+import pt.isec.a21210827.fourinrow.Activity.MainActivity;
 import pt.isec.a21210827.fourinrow.Logic.GameEngine;
 import pt.isec.a21210827.fourinrow.R;
 
@@ -41,21 +43,26 @@ import pt.isec.a21210827.fourinrow.R;
 
 public class Communication extends Application {
 
+    //Game Class
     Game gameInstance;
 
     private static final int PORT = 8899;
     private static final int PORTaux = 9988;
 
+    //View
     ProgressDialog pd = null;
 
+    //Communication
     ServerSocket serverSocket = null;
     Socket socketGame = null;
-    //Socket socketGameServer = null;
     BufferedReader input;
     PrintWriter output;
     ObjectOutputStream outToServer;
     ObjectInputStream inFromServer;
     Handler procMsg = null;
+
+    //Variável para controlar qual jogador é cliente ou servidor
+    boolean canMove;
 
     @Override
     public void onCreate() {
@@ -132,12 +139,19 @@ public class Communication extends Application {
 
                     final GameVariables gameUpdated = (GameVariables) inFromServer.readObject();
 
+                    setCanMove(true);
+
                     procMsg.post(new Runnable() {
                         @Override
                         public void run() {
                             GameEngine.getInstance().setActiveGame(gameUpdated.getGame());
                             GameEngine.getInstance().setGameGrid(gameUpdated.getGameGrid());
                             GameEngine.getInstance().setList(gameUpdated.getList());
+                            //Para verificar a condição de jogo quando reponho os valores
+
+                            if(gameUpdated.getWinner() != null){
+                                GameEngine.getInstance().winnerDialogBox("Ganhou o jogador: " + gameUpdated.getWinner());
+                            }
                         }
                     });
 
@@ -209,9 +223,9 @@ public class Communication extends Application {
                 gameInstance.getPlayers().add(new Player(clientName));
 
                 //Faz o random a ver quem começa
-                Random random = new Random();
+                /*Random random = new Random();
                 int r = random.nextInt(2);
-                gameInstance.getPlayers().get(r).setActivePlayer(true);
+                gameInstance.getPlayers().get(r).setActivePlayer(true);*/
 
                 //Envia a instancia para o cliente já completa
                 outToServer.writeObject(gameInstance);
@@ -240,12 +254,18 @@ public class Communication extends Application {
 
                     final GameVariables gameUpdated = (GameVariables) inFromServer.readObject();
 
+                    setCanMove(true);
+
                     procMsg.post(new Runnable() {
                         @Override
                         public void run() {
                             GameEngine.getInstance().setActiveGame(gameUpdated.getGame());
                             GameEngine.getInstance().setGameGrid(gameUpdated.getGameGrid());
                             GameEngine.getInstance().setList(gameUpdated.getList());
+
+                            if(gameUpdated.getWinner() != null){
+                                GameEngine.getInstance().winnerDialogBox("Ganhou o jogador: " + gameUpdated.getWinner());
+                            }
                         }
                     });
 
@@ -254,7 +274,6 @@ public class Communication extends Application {
                 procMsg.post(new Runnable() {
                     @Override
                     public void run() {
-                        //finish();
                         Toast.makeText(getApplicationContext(), "Fim do Jogo + Exception e", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -297,4 +316,13 @@ public class Communication extends Application {
             e.printStackTrace();
         }
     }
+
+    public boolean isCanMove() {
+        return canMove;
+    }
+
+    public void setCanMove(boolean canMove) {
+        this.canMove = canMove;
+    }
+
 }

@@ -219,7 +219,8 @@ public class GameSettingsActivity extends Activity {
                         case 0:
                             //client();
                             com.getGameInstance().getPlayers().add(new Player(etPlayerName.getText().toString()));
-                            com.getGameInstance().getPlayers().get(0).setClientMode(0);
+                            com.getGameInstance().getPlayers().get(0).setActivePlayer(false);
+                            com.setCanMove(false);
                             clientDlg();
 
                             break;
@@ -227,7 +228,8 @@ public class GameSettingsActivity extends Activity {
                         case 1:
                             //server();
                             com.getGameInstance().getPlayers().add(new Player(etPlayerName.getText().toString()));
-                            com.getGameInstance().getPlayers().get(0).setClientMode(1);
+                            com.getGameInstance().getPlayers().get(0).setActivePlayer(true);
+                            com.setCanMove(true);
                             serverDlg();
 
                             break;
@@ -316,7 +318,7 @@ public class GameSettingsActivity extends Activity {
     public void clientDlg() {
 
         final EditText edtIP = new EditText(this);
-        edtIP.setText("192.168.1.147");
+        edtIP.setText("192.168.1.177");
         AlertDialog ad = new AlertDialog.Builder(this).setTitle("Four In Row Client")
                 .setMessage("Server IP").setView(edtIP)
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {

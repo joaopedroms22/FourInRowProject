@@ -18,6 +18,7 @@ public class Game implements Serializable{
         this.players = new ArrayList<>();
         this.gameTime = 0;
         this.turns = 0;
+        this.winner = -1;
     }
 
     public ArrayList<Player> getPlayers() {

@@ -38,9 +38,9 @@ public class GameEngine implements Serializable {
     //Generic Variables
     private int[][] gameGrid;
     private int[] list;
-    private int posx;
+    private int posx = 0;
     private int posy;
-    private int posyFinal;
+    private int posyFinal = 0;
     private int activePlayer;
     private int size;
 
@@ -56,7 +56,7 @@ public class GameEngine implements Serializable {
     //Communication
     private Communication com;
     private GameVariables gameVar;
-    private boolean activePhone = false;
+    private String winner = null;
 
     public static GameEngine getInstance() {
         if (instance == null) {
@@ -160,7 +160,6 @@ public class GameEngine implements Serializable {
             Random random = new Random();
             int r = random.nextInt(2);
             game.getPlayers().get(r).setActivePlayer(true);
-
         }
 
         whoIsActive();
@@ -178,7 +177,9 @@ public class GameEngine implements Serializable {
                 whoIsActive();
 
                 if (game.getGameMode().equals(GameSettingsActivity.S_MULTIPLAYER_ONLINE)) {
-                    if(!allowMove()){
+
+                    if(!com.isCanMove()){
+                        Toast.makeText(context, "Nao podes mover!", Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }
@@ -192,28 +193,23 @@ public class GameEngine implements Serializable {
                     gvGame.setAdapter(new GameGridViewAdapter(list, context));
                 }
 
-                if (game.getGameMode().equals(GameSettingsActivity.S_MULTIPLAYER_ONLINE)) {
-                    sendMove();
-                }
-
-                if (checkEndGame(posx, posyFinal)) {//todo: fazer esta verificação só à 4 iteração!
+                if (checkEndGame(posx, posyFinal)) {
                     saveScore();
                     saveElapsedTime(mChrono);
-                    winnerDialogBox(context, "Ganhou o Jogador: " + game.getPlayers().get(activePlayer).getName());
-                } else {
-                    switchPlayer();
+                    winnerDialogBox("Ganhou o Jogador: " + game.getPlayers().get(activePlayer).getName());
+                }
+                else {
+
+                    if (!game.getGameMode().equals(GameSettingsActivity.S_MULTIPLAYER_ONLINE)) {
+                        switchPlayer();
+                    }
+                }
+
+                if (game.getGameMode().equals(GameSettingsActivity.S_MULTIPLAYER_ONLINE)) {
+                    if(winner == null) sendMove();
                 }
             }
         });
-    }
-
-    private boolean allowMove() {
-        if (!activePhone) {
-            Toast.makeText(context, "Not your turn!", Toast.LENGTH_SHORT);
-            return false;
-        }
-
-        return true;
     }
 
     private void sendMove() {
@@ -223,7 +219,9 @@ public class GameEngine implements Serializable {
         gameVar.setGameGrid(gameGrid);
         switchPlayer();
         gameVar.setGame(game);
+        com.setCanMove(false);
         com.sendObjecttoServer(gameVar);
+
     }
 
     private void saveScore() {
@@ -236,6 +234,17 @@ public class GameEngine implements Serializable {
         saveOnFile();
 
         tvScore.setText(game.getPlayers().get(0).getName() + ": " + game.getPlayers().get(0).getScore() + "   &&   " + game.getPlayers().get(1).getName() + ": " + game.getPlayers().get(1).getScore());
+
+        if (game.getGameMode().equals(GameSettingsActivity.S_MULTIPLAYER_ONLINE)) {
+            gameVar = new GameVariables();
+            gameVar.setList(list);
+            gameVar.setGameGrid(gameGrid);
+            gameVar.setWinner(game.getPlayers().get(activePlayer).getName());
+            gameVar.setGame(game);
+            com.setCanMove(false);
+            com.sendObjecttoServer(gameVar);
+        }
+
     }
 
     private void saveOnFile() {
@@ -264,7 +273,7 @@ public class GameEngine implements Serializable {
 
     }
 
-    private void winnerDialogBox(final Context context, String message) {
+    public void winnerDialogBox(String message) {
         new AlertDialog.Builder(context)
                 .setTitle("Fim do Jogo")
                 .setMessage(message)
@@ -338,7 +347,7 @@ public class GameEngine implements Serializable {
 
         //Se o tabuleiro já se encontrar preenchido acaba o jogo, com um empate!
         if (game.getTurns() == (size * size)) {
-            winnerDialogBox(context, "Empate!");
+            winnerDialogBox("Empate!");
             return false;
         }
 
@@ -545,7 +554,7 @@ public class GameEngine implements Serializable {
         if (checkEndGame(posx, posyFinal)) { //todo: fazer esta verificação só à 4 iteração!
             saveScore();
             saveElapsedTime(mChrono);
-            winnerDialogBox(context, "Ganhou o Jogador: " + game.getPlayers().get(activePlayer).getName());
+            winnerDialogBox( "Ganhou o Jogador: " + game.getPlayers().get(activePlayer).getName());
         }
     }
 
@@ -598,4 +607,11 @@ public class GameEngine implements Serializable {
         }
     }
 
+    public String getWinner() {
+        return winner;
+    }
+
+    public void setWinner(String winner) {
+        this.winner = winner;
+    }
 }

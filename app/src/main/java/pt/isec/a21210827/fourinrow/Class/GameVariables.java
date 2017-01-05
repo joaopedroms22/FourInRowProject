@@ -10,10 +10,12 @@ public class GameVariables implements Serializable{
     private int[][] gameGrid;
     private int[] list;
     private Game game;
+    private String winner;
 
     public GameVariables() {
         this.gameGrid = null;
         this.list = null;
+        this.winner = null;
     }
 
     public int[][] getGameGrid() {
@@ -38,5 +40,13 @@ public class GameVariables implements Serializable{
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public String getWinner() {
+        return winner;
+    }
+
+    public void setWinner(String winner) {
+        this.winner = winner;
     }
 }
