@@ -14,13 +14,15 @@ public class Player implements Serializable {
     private boolean activePlayer;
 
     public Player(){
-        this.name = "IA - LUÍS";
+        this.name = "IA -ROBERTO";
         this.score = 0;
+        this.activePlayer = false;
     }
 
     public Player(String name) {
         this.name = name;
         this.score = 0;
+        this.activePlayer = false;
     }
 
     public String getName() {

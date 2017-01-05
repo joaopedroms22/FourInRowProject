@@ -36,10 +36,7 @@ public class GameActivity extends Activity {
     private int[] list, gameGrid;
     private int flag = 0;
 
-    private static final int PORT = 8899;
-    private static final int PORTaux = 9988;
     Communication com;
-    ServerSocket serverSocket = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +53,7 @@ public class GameActivity extends Activity {
         receiveIntents();
 
         //Desenha o Tabuleiro
-        GameEngine.getInstance().startGame(this, gvGame, gameInstance, gameChronometer, tvPlayerName, tvScore);
+        GameEngine.getInstance().startGame(this, gvGame, gameInstance, gameChronometer, tvPlayerName, tvScore, com);
 
         //Se for -1 é porque esta atividade nasceu de um loadGame
         if (flag == -1) {
@@ -68,28 +65,8 @@ public class GameActivity extends Activity {
 
     private void receiveIntents() {
 
+        //Recebe a innstancia com os detalhes do jogo criado
         gameInstance = (Game) getIntent().getSerializableExtra("Game");
-
-        if(gameInstance == null){
-
-            gameInstance = com.getGameInstance();
-
-            Player client = (Player) getIntent().getSerializableExtra("Client");
-            if(client != null){
-                gameInstance.getPlayers().add(client);
-                clientDlg();
-            }
-
-            Player server = (Player) getIntent().getSerializableExtra("Server");
-            if(server != null){
-                gameInstance.getPlayers().add(server);
-                serverDlg();
-            }
-        }
-
-
-        //Get 0, pq é o modo 1 Jogador, logo o index vai ser sempre o 1º
-        //tvPlayerName.setText(gameInstance.getPlayers().get(0).getName());
 
         //Adicona o tipo de Jogo ao ecra
         tvGameMode.setText(gameInstance.getGameMode());
@@ -182,48 +159,6 @@ public class GameActivity extends Activity {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void clientDlg() {
-
-        final EditText edtIP = new EditText(this);
-        edtIP.setText("192.168.1.117");
-        AlertDialog ad = new AlertDialog.Builder(this).setTitle("Four In Row Client")
-                .setMessage("Server IP").setView(edtIP)
-                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        com.client(edtIP.getText().toString(), PORT); // to test with emulators: PORTaux);
-                    }
-                }).setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        //finish();
-                    }
-                }).create();
-        ad.show();
-    }
-
-    public void serverDlg() {
-
-        ProgressDialog pd;
-
-        String ip = com.getLocalIpAddress();
-        pd = new ProgressDialog(this);
-        pd.setMessage("Waiting for a client..." + "\n(IP: " + ip + ")"); //TODO: Colocar no ficheiro de strings
-        pd.setTitle("Four in Row Server!");
-
-        //setOnCancel é chamado sempre que é feito um back, ou o um toque fora da dialogue box
-        pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                finish();
-            }
-        });
-
-        pd.show();
-
-        com.server(pd);
     }
 
 }

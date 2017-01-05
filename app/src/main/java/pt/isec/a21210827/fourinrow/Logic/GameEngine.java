@@ -22,14 +22,14 @@ import java.util.List;
 import java.util.Random;
 
 import pt.isec.a21210827.fourinrow.Activity.MainActivity;
+import pt.isec.a21210827.fourinrow.Class.Communication;
 import pt.isec.a21210827.fourinrow.Class.Game;
 import pt.isec.a21210827.fourinrow.Class.GameGridViewAdapter;
+import pt.isec.a21210827.fourinrow.Class.GameVariables;
 import pt.isec.a21210827.fourinrow.R;
 import pt.isec.a21210827.fourinrow.Activity.GameSettingsActivity;
 
-
-
-public class GameEngine implements Serializable{
+public class GameEngine implements Serializable {
 
     final public static String LASTGAME = "lastGame";
 
@@ -53,6 +53,11 @@ public class GameEngine implements Serializable{
     private Chronometer mChrono;
     private TextView tvPlayer, tvScore;
 
+    //Communication
+    private Communication com;
+    private GameVariables gameVar;
+    private boolean activePhone = false;
+
     public static GameEngine getInstance() {
         if (instance == null) {
             instance = new GameEngine();
@@ -60,57 +65,61 @@ public class GameEngine implements Serializable{
         return instance;
     }
 
-    public int [] getList(){
+    public int[] getList() {
         return list;
     }
 
-    public int[] getGameGrid(){
+    public int[] getGameGrid() {
 
-            List<Integer> list = new ArrayList<>();
-            for (int i = 0; i < gameGrid.length; i++) {
-                // tiny change 1: proper dimensions
-                for (int j = 0; j < gameGrid[i].length; j++) {
-                    // tiny change 2: actually store the values
-                    list.add(gameGrid[j][i]);
-                }
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < gameGrid.length; i++) {
+            // tiny change 1: proper dimensions
+            for (int j = 0; j < gameGrid[i].length; j++) {
+                // tiny change 2: actually store the values
+                list.add(gameGrid[j][i]);
             }
-            // now you need to find a mode in the list.
+        }
+        // now you need to find a mode in the list.
 
-            // tiny change 3, if you definitely need an array
-            int[] vector = new int[list.size()];
-            for (int i = 0; i < vector.length; i++) {
-                vector[i] = list.get(i);
-            }
+        // tiny change 3, if you definitely need an array
+        int[] vector = new int[list.size()];
+        for (int i = 0; i < vector.length; i++) {
+            vector[i] = list.get(i);
+        }
 
         return vector;
     }
 
-    public void setGameGrid(int[] gameGrid, int size){
+    public void setGameGrid(int [][] gameGrid){
+        this.gameGrid = gameGrid;
+    }
+
+    public void setGameGrid(int[] gameGrid, int size) {
 
         int[][] aux = new int[size][size];
 
-        for(int i=0; i<size;i++)
-            for(int j=0;j<size;j++)
-                aux[i][j] = gameGrid[(j*size) + i];
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+                aux[i][j] = gameGrid[(j * size) + i];
 
         this.gameGrid = aux;
     }
 
-    public void setList(int[] list){
+    public void setList(int[] list) {
         this.list = list;
         gvGame.setAdapter(new GameGridViewAdapter(list, context));
     }
 
-    public Game getActiveGame(){
+    public Game getActiveGame() {
         return game;
     }
 
-    public void setActiveGame(Game game){
+    public void setActiveGame(Game game) {
         this.game = game;
         whoIsActive();
     }
 
-    public void startGame(final Context context, final GridView gvGame, final Game gameInstance, final Chronometer mChrono, final TextView tvPlayer, final TextView tvScore) {
+    public void startGame(final Context context, final GridView gvGame, final Game gameInstance, final Chronometer mChrono, final TextView tvPlayer, final TextView tvScore, final Communication com) {
 
         this.gvGame = gvGame;
         this.context = context;
@@ -118,7 +127,9 @@ public class GameEngine implements Serializable{
         this.mChrono = mChrono;
         this.tvPlayer = tvPlayer;
         this.tvScore = tvScore;
+        this.com = com;
 
+        gameVar = new GameVariables();
         size = gameInstance.getSize();
         gameGrid = new int[size][size];
         list = new int[size * size];
@@ -144,11 +155,15 @@ public class GameEngine implements Serializable{
         //Inicia os Scores!
         tvScore.setText(game.getPlayers().get(0).getName() + ": " + game.getPlayers().get(0).getScore() + "   &&   " + game.getPlayers().get(1).getName() + ": " + game.getPlayers().get(1).getScore());
 
-        //Sortei um valor entre '0' ou '1', para descobrir que jogador começa o jogo primeiro e coloca na textView
-        Random random = new Random();
-        int r = random.nextInt(2);
-        game.getPlayers().get(r).setActivePlayer(true);
-        tvPlayer.setText(game.getPlayers().get(r).getName());
+        if(!game.getGameMode().equals(GameSettingsActivity.S_MULTIPLAYER_ONLINE)) {
+            //Sortei um valor entre '0' ou '1', para descobrir que jogador começa o jogo primeiro e coloca na textView
+            Random random = new Random();
+            int r = random.nextInt(2);
+            game.getPlayers().get(r).setActivePlayer(true);
+
+        }
+
+        whoIsActive();
 
         //Verifica se o primeiro a jogar é o BOT Roberto, se for faz a jogada dele e troca de jogador!
         checkIfBotIsFirst();
@@ -162,6 +177,12 @@ public class GameEngine implements Serializable{
 
                 whoIsActive();
 
+                if (game.getGameMode().equals(GameSettingsActivity.S_MULTIPLAYER_ONLINE)) {
+                    if(!allowMove()){
+                        return;
+                    }
+                }
+
                 if (putPiece(gameGrid, posx)) {
                     if (game.getPlayers().get(0).isActivePlayer()) {
                         list[(size * posyFinal) + posx] = R.drawable.circle_shape_red;
@@ -169,6 +190,10 @@ public class GameEngine implements Serializable{
                         list[(size * posyFinal) + posx] = R.drawable.circle_shape_yellow;
                     }
                     gvGame.setAdapter(new GameGridViewAdapter(list, context));
+                }
+
+                if (game.getGameMode().equals(GameSettingsActivity.S_MULTIPLAYER_ONLINE)) {
+                    sendMove();
                 }
 
                 if (checkEndGame(posx, posyFinal)) {//todo: fazer esta verificação só à 4 iteração!
@@ -180,6 +205,25 @@ public class GameEngine implements Serializable{
                 }
             }
         });
+    }
+
+    private boolean allowMove() {
+        if (!activePhone) {
+            Toast.makeText(context, "Not your turn!", Toast.LENGTH_SHORT);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void sendMove() {
+
+        gameVar = new GameVariables();
+        gameVar.setList(list);
+        gameVar.setGameGrid(gameGrid);
+        switchPlayer();
+        gameVar.setGame(game);
+        com.sendObjecttoServer(gameVar);
     }
 
     private void saveScore() {
@@ -200,9 +244,9 @@ public class GameEngine implements Serializable{
         int winner = game.getWinner();
         int loser;
 
-        if(winner == 0){
+        if (winner == 0) {
             loser = 1;
-        }else{
+        } else {
             loser = 0;
         }
 
@@ -273,6 +317,13 @@ public class GameEngine implements Serializable{
                 break;
 
             case GameSettingsActivity.S_MULTIPLAYER_ONLINE:
+                if (game.getPlayers().get(0).isActivePlayer()) {
+                    tvPlayer.setText(game.getPlayers().get(1).getName());
+                    game.getPlayers().get(0).setActivePlayer(false);
+                } else {
+                    tvPlayer.setText(game.getPlayers().get(0).getName());
+                    game.getPlayers().get(0).setActivePlayer(true);
+                }
                 break;
         }
     }
@@ -503,8 +554,8 @@ public class GameEngine implements Serializable{
         //Vai percorrer a a tabela toda á procura de uma jogada realizada do adversário!
         for (int i = 0; i < (size - 1); i++) {
             for (int j = 0; j < (size - 1); j++) {
-                if(verifyBotVertical(i, j) != 0){
-                    return verifyBotVertical(i,j);
+                if (verifyBotVertical(i, j) != 0) {
+                    return verifyBotVertical(i, j);
                 }
             }
         }

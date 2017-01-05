@@ -13,7 +13,6 @@ public class Game implements Serializable{
     private int turns; //Turnos Jogados
     private boolean finished; //Jogo terminado
 
-
     public Game(){
         this.finished = false;
         this.players = new ArrayList<>();
